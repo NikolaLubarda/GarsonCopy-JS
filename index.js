@@ -19,3 +19,11 @@ function izabraniKonobar(konobar) {
   localStorage.setItem("konobar", konobar);
   console.log(localStorage.getItem("konobar"));
 }
+function sledecaStranica() {
+  let localStorage1 = localStorage.getItem("konobar");
+  if (!localStorage1) {
+    alert("izaberi konobara");
+  } else {
+    window.location.href = "./stolovi.html";
+  }
+}
