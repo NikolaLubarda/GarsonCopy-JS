@@ -14,7 +14,8 @@ const btns = document.querySelectorAll("button");
 
 let ukupnoElement = document.querySelector(".ukupno1");
 let ukupno = 0;
-let racun1 = "";
+
+let narudzbe = [];
 
 btns.forEach((btn) => {
   btn.addEventListener("click", (e) => {
@@ -27,8 +28,9 @@ btns.forEach((btn) => {
     console.log(naziv, cijena, napomena, kolicina);
     let cijenaKolicina = cijena * kolicina;
     let racun1 = `artikl: ${naziv} napomena: ${napomena} kolicina: ${kolicina} cijena: ${cijenaKolicina}`;
-    console.log(racun1);
+
     dodajURacun(racun1, cijenaKolicina);
+    narudzbe.push({ racun1 });
   });
 });
 
@@ -41,7 +43,7 @@ function dodajURacun(racun1, cijenaKolicina) {
 }
 
 function sacuvaj() {
-  localStorage.setItem(sto, racun1);
-  let sacuvano = localStorage.getItem(sto);
+  localStorage.setItem(key, narudzbe);
+  let sacuvano = localStorage.getItem(key);
   console.log(sacuvano);
 }
