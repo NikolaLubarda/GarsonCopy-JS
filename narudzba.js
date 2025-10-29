@@ -12,7 +12,12 @@ const btns = document.querySelectorAll("button");
 
 btns.forEach((btn) => {
   btn.addEventListener("click", (e) => {
-    let cijena = document.getElementsByClassName("cijena");
-    console.log(e, "klikno", cijena);
+    const t = e.target.parentElement;
+    const naziv = t.querySelector(".naziv").textContent;
+    const cijena = t.querySelector(".cijena").textContent;
+    const napomena = t.querySelector(".napomena").value;
+    const kolicina = t.querySelector(".kolicina").value;
+    // console.log(cijena, naziv, napomena, kolicina);
+    console.log(naziv, cijena, napomena, kolicina);
   });
 });
