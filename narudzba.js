@@ -8,7 +8,7 @@ stoElement.innerHTML = `Broj stola: ${sto}`;
 
 const key = sto;
 
-const racun = document.getElementById("racun");
+let racunElement = document.getElementById("racun");
 
 const btns = document.querySelectorAll("button");
 
@@ -21,29 +21,66 @@ btns.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     const t = e.target.parentElement;
     const naziv = t.querySelector(".naziv").textContent;
-    const cijena = t.querySelector(".cijena").textContent;
+    const cijena = parseFloat(t.querySelector(".cijena").textContent);
     const napomena = t.querySelector(".napomena").value;
-    const kolicina = t.querySelector(".kolicina").value;
-    // console.log(cijena, naziv, napomena, kolicina);
-    console.log(naziv, cijena, napomena, kolicina);
-    let cijenaKolicina = cijena * kolicina;
-    let racun1 = `artikl: ${naziv} napomena: ${napomena} kolicina: ${kolicina} cijena: ${cijenaKolicina}`;
+    const kolicina = parseInt(t.querySelector(".kolicina").value);
+
+    const cijenaKolicina = cijena * kolicina;
+    const racun1 = `Artikl: ${naziv} | Napomena: ${
+      napomena || "-"
+    } | Količina: ${kolicina} | Cijena: ${cijenaKolicina}`;
 
     dodajURacun(racun1, cijenaKolicina);
-    narudzbe.push({ racun1 });
+
+    narudzbe.push({
+      naziv,
+      napomena,
+      kolicina,
+      cijenaKolicina,
+    });
   });
 });
 
 function dodajURacun(racun1, cijenaKolicina) {
   const para = document.createElement("p");
   para.textContent = racun1;
-  racun.appendChild(para);
+  racunElement.appendChild(para);
   ukupno += cijenaKolicina;
   ukupnoElement.textContent = ukupno;
 }
 
 function sacuvaj() {
-  localStorage.setItem(key, narudzbe);
-  let sacuvano = localStorage.getItem(key);
-  console.log(sacuvano);
+  localStorage.setItem(key, JSON.stringify(narudzbe));
+  console.log(localStorage.getItem(key));
 }
+
+window.onload = function () {
+  const sacuvano = JSON.parse(localStorage.getItem(key)) || [];
+  racunElement.innerHTML = "";
+  ukupno = 0;
+
+  sacuvano.forEach((artikl) => {
+    const para = document.createElement("p");
+    para.textContent = `Artikl: ${artikl.naziv} | Napomena: ${
+      artikl.napomena || "-"
+    } | Količina: ${artikl.kolicina} | Cijena: ${artikl.cijenaKolicina}`;
+    racunElement.appendChild(para);
+    ukupno += artikl.cijenaKolicina;
+  });
+
+  ukupnoElement.textContent = ukupno;
+  narudzbe = sacuvano;
+};
+
+const btnObrisiSve = document.getElementById("obrisiSve");
+
+btnObrisiSve.addEventListener("click", () => {
+  localStorage.removeItem(key);
+  racunElement.innerHTML = "";
+  ukupno = 0;
+  ukupnoElement.textContent = ukupno;
+
+  narudzbe = [];
+
+  console.log(`racun za ovaj sto je obrisan ${key}`);
+});
