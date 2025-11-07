@@ -86,3 +86,11 @@ btnObrisiSve.addEventListener("click", () => {
 
   console.log(`racun za ovaj sto je obrisan ${key}`);
 });
+
+const btnPlaceno = document.getElementById("placeno");
+
+btnPlaceno.addEventListener("click", () => {
+  let oznaka = key + "oznaka";
+  localStorage.setItem(oznaka, true);
+  console.log(localStorage.getItem(oznaka));
+});
