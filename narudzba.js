@@ -14,6 +14,7 @@ let ukupnoElement = document.querySelector(".ukupno1");
 
 let ukupno = 0;
 let narudzbe = [];
+let oznaka = key + "oznaka";
 
 btns.forEach((btn) => {
   btn.addEventListener("click", (e) => {
@@ -57,6 +58,7 @@ function dodajURacun(artikl) {
 function sacuvaj() {
   localStorage.setItem(key, JSON.stringify(narudzbe));
   console.log(`Račun za sto ${key} sačuvan`, localStorage.getItem(key));
+  localStorage.removeItem(oznaka);
 }
 
 window.onload = function () {
@@ -77,6 +79,7 @@ const btnObrisiSve = document.getElementById("obrisiSve");
 
 btnObrisiSve.addEventListener("click", () => {
   localStorage.removeItem(key);
+  localStorage.removeItem(oznaka);
 
   racunElement.innerHTML = "";
   ukupno = 0;
@@ -90,7 +93,6 @@ btnObrisiSve.addEventListener("click", () => {
 const btnPlaceno = document.getElementById("placeno");
 
 btnPlaceno.addEventListener("click", () => {
-  let oznaka = key + "oznaka";
   localStorage.setItem(oznaka, true);
   console.log(localStorage.getItem(oznaka));
 });
