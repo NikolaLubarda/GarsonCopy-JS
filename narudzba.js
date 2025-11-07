@@ -9,12 +9,10 @@ stoElement.innerHTML = `Broj stola: ${sto}`;
 const key = sto;
 
 let racunElement = document.getElementById("racun");
-
 const btns = document.querySelectorAll("button");
-
 let ukupnoElement = document.querySelector(".ukupno1");
-let ukupno = 0;
 
+let ukupno = 0;
 let narudzbe = [];
 
 btns.forEach((btn) => {
@@ -26,32 +24,39 @@ btns.forEach((btn) => {
     const kolicina = parseInt(t.querySelector(".kolicina").value);
 
     const cijenaKolicina = cijena * kolicina;
-    const racun1 = `Artikl: ${naziv} | Napomena: ${
-      napomena || "-"
-    } | Količina: ${kolicina} | Cijena: ${cijenaKolicina}`;
 
-    dodajURacun(racun1, cijenaKolicina);
+    const item = { naziv, napomena, kolicina, cijenaKolicina };
 
-    narudzbe.push({
-      naziv,
-      napomena,
-      kolicina,
-      cijenaKolicina,
-    });
+    narudzbe.push(item);
+    dodajURacun(item);
+
+    ukupno += cijenaKolicina;
+    ukupnoElement.textContent = ukupno;
   });
 });
 
-function dodajURacun(racun1, cijenaKolicina) {
+function dodajURacun(artikl) {
   const para = document.createElement("p");
-  para.textContent = racun1;
-  racunElement.appendChild(para);
-  ukupno += cijenaKolicina;
-  ukupnoElement.textContent = ukupno;
-}
+  para.textContent = `Artikl: ${artikl.naziv} | Napomena: ${artikl.napomena} | Količina: ${artikl.kolicina} | Cijena: ${artikl.cijenaKolicina}`;
 
+  const btnDelete = document.createElement("button");
+  btnDelete.textContent = "X";
+
+  btnDelete.addEventListener("click", () => {
+    racunElement.removeChild(para);
+
+    narudzbe = narudzbe.filter((nar) => nar !== artikl);
+
+    ukupno -= artikl.cijenaKolicina;
+    ukupnoElement.textContent = ukupno;
+  });
+
+  para.appendChild(btnDelete);
+  racunElement.appendChild(para);
+}
 function sacuvaj() {
   localStorage.setItem(key, JSON.stringify(narudzbe));
-  console.log(localStorage.getItem(key));
+  console.log(`Račun za sto ${key} sačuvan`, localStorage.getItem(key));
 }
 
 window.onload = function () {
@@ -60,22 +65,19 @@ window.onload = function () {
   ukupno = 0;
 
   sacuvano.forEach((artikl) => {
-    const para = document.createElement("p");
-    para.textContent = `Artikl: ${artikl.naziv} | Napomena: ${
-      artikl.napomena || "-"
-    } | Količina: ${artikl.kolicina} | Cijena: ${artikl.cijenaKolicina}`;
-    racunElement.appendChild(para);
+    narudzbe.push(artikl);
+    dodajURacun(artikl);
     ukupno += artikl.cijenaKolicina;
   });
 
   ukupnoElement.textContent = ukupno;
-  narudzbe = sacuvano;
 };
 
 const btnObrisiSve = document.getElementById("obrisiSve");
 
 btnObrisiSve.addEventListener("click", () => {
   localStorage.removeItem(key);
+
   racunElement.innerHTML = "";
   ukupno = 0;
   ukupnoElement.textContent = ukupno;
