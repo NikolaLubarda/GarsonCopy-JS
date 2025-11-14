@@ -1,3 +1,5 @@
+const stoloviElement = document.getElementById("stolovi");
+
 function izborPadajuciMeni() {
   document.getElementById("PLista").classList.toggle("show");
 }
@@ -25,5 +27,23 @@ function sledecaStranica() {
     alert("izaberi konobara");
   } else {
     window.location.href = "./stolovi.html";
+  }
+}
+
+window.onload = function () {
+  OtvoreniStolovi();
+};
+
+function OtvoreniStolovi() {
+  stoloviElement.textContent = "Otvoreni Stolovi: ";
+  for (let i = 1; i <= 12; i++) {
+    let brojStola = i;
+    const narudzba = localStorage.getItem(`${brojStola}`);
+    const sto = document.getElementById(`sto${brojStola}`);
+
+    if (narudzba) {
+      console.log(narudzba);
+      stoloviElement.textContent += `sto:${brojStola} `;
+    }
   }
 }
