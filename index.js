@@ -1,4 +1,5 @@
 const stoloviElement = document.getElementById("stolovi");
+const naplacenoElement = document.getElementById("naplaceno");
 
 function izborPadajuciMeni() {
   document.getElementById("PLista").classList.toggle("show");
@@ -36,11 +37,18 @@ window.onload = function () {
 
 function OtvoreniStolovi() {
   stoloviElement.textContent = "Otvoreni Stolovi: ";
+  naplacenoElement.textContent = "Zarađeno:";
+  let zbirPlaceno = 0;
   for (let i = 1; i <= 12; i++) {
     let brojStola = i;
     const narudzba = localStorage.getItem(`${brojStola}`);
-    const sto = document.getElementById(`sto${brojStola}`);
-
+    //  const sto = document.getElementById(`sto${brojStola}`);
+    const placeni = localStorage.getItem(`${brojStola}ukupnaCijena`);
+    if (placeni) {
+      zbirPlaceno += parseFloat(placeni);
+      naplacenoElement.textContent = `Ukupno naplaceno: ${zbirPlaceno}$`;
+    }
+    console.log(placeni);
     if (narudzba) {
       console.log(narudzba);
       stoloviElement.textContent += `sto:${brojStola} `;

@@ -94,5 +94,7 @@ const btnPlaceno = document.getElementById("placeno");
 
 btnPlaceno.addEventListener("click", () => {
   localStorage.setItem(oznaka, true);
+  localStorage.setItem(`${key}ukupnaCijena`, ukupno);
   console.log(localStorage.getItem(oznaka));
+  console.log(localStorage.getItem(`${key}ukupnaCijena`));
 });
