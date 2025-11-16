@@ -57,6 +57,8 @@ function dodajURacun(artikl) {
 }
 function sacuvaj() {
   localStorage.setItem(key, JSON.stringify(narudzbe));
+  localStorage.setItem(`ukupno2${key}`, ukupno);
+  console.log(localStorage.getItem(`ukupno2${key}`) + "radi");
   console.log(`Račun za sto ${key} sačuvan`, localStorage.getItem(key));
   localStorage.removeItem(oznaka);
 }
