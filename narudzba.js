@@ -106,15 +106,65 @@ const hrana = JSON.parse(localStorage.getItem("hrana"));
 console.log(hrana[0].strMeal);
 console.log(hrana[1].strMeal);
 console.log(hrana[2].strMeal);
-
+//naziv 1
 let meal1 = document.createElement("p");
 meal1.textContent = hrana[0].strMeal;
 hranaAPIdiv.appendChild(meal1);
+//cijena 1
+let cijena1 = document.createElement("p");
+cijena1.textContent = 550;
+hranaAPIdiv.appendChild(cijena1);
+//napomena 1
+let napomena1 = document.createElement("input");
+napomena1.placeholder = "napomena";
+hranaAPIdiv.appendChild(napomena1);
+//kolicina 1
+let kolicina1 = document.createElement("input");
+kolicina1.placeholder = "kolicina";
+hranaAPIdiv.appendChild(kolicina1);
+//btn 1
+let btn1 = document.createElement("button");
+btn1.textContent = "dodaj";
+hranaAPIdiv.appendChild(btn1);
 
+//naziv 2
 let meal2 = document.createElement("p");
 meal2.textContent = hrana[1].strMeal;
 hranaAPIdiv.appendChild(meal2);
+//cijena 2
+let cijena2 = document.createElement("p");
+cijena2.textContent = 750;
+hranaAPIdiv.appendChild(cijena2);
+//napomena 2
+let napomena2 = document.createElement("input");
+napomena2.placeholder = "napomena";
+hranaAPIdiv.appendChild(napomena2);
+//kolicina 2
+let kolicina2 = document.createElement("input");
+kolicina2.placeholder = "kolicina";
+hranaAPIdiv.appendChild(kolicina2);
+//btn 2
+let btn2 = document.createElement("button");
+btn2.textContent = "dodaj";
+hranaAPIdiv.appendChild(btn2);
 
+//naziv 3
 let meal3 = document.createElement("p");
-meal3.textContent = hrana[2].strMeal;
+meal2.textContent = hrana[2].strMeal;
 hranaAPIdiv.appendChild(meal3);
+//cijena 3
+let cijena3 = document.createElement("p");
+cijena3.textContent = 750;
+hranaAPIdiv.appendChild(cijena3);
+//napomena 3
+let napomena3 = document.createElement("input");
+napomena3.placeholder = "napomena";
+hranaAPIdiv.appendChild(napomena3);
+//kolicina 3
+let kolicina3 = document.createElement("input");
+kolicina3.placeholder = "kolicina";
+hranaAPIdiv.appendChild(kolicina3);
+//btn 3
+let btn3 = document.createElement("button");
+btn3.textContent = "dodaj";
+hranaAPIdiv.appendChild(btn3);
