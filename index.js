@@ -64,6 +64,7 @@ function OtvoreniStolovi() {
       console.log(nenaplaceno);
     }
   }
+
   /* const stolovi = JSON.parse(localStorage.getItem("sto")) || [];
 
   let ukupno = 0;
