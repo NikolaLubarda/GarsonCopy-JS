@@ -10,32 +10,12 @@ stoElement.innerHTML = `Broj stola: ${sto}`;
 const key = sto;
 
 let racunElement = document.getElementById("racun");
-const btns = document.querySelectorAll("button");
+// const btns = document.querySelectorAll("button"); // OVO NAM VIŠE NE TREBA OVDJE
 let ukupnoElement = document.querySelector(".ukupno1");
 
 let ukupno = 0;
 let narudzbe = [];
 let oznaka = key + "oznaka";
-
-btns.forEach((btn) => {
-  btn.addEventListener("click", (e) => {
-    const t = e.target.parentElement;
-    const naziv = t.querySelector(".naziv").textContent;
-    const cijena = parseFloat(t.querySelector(".cijena").textContent);
-    const napomena = t.querySelector(".napomena").value;
-    const kolicina = parseInt(t.querySelector(".kolicina").value);
-
-    const cijenaKolicina = cijena * kolicina;
-
-    const item = { naziv, napomena, kolicina, cijenaKolicina };
-
-    narudzbe.push(item);
-    dodajURacun(item);
-
-    ukupno += cijenaKolicina;
-    ukupnoElement.textContent = ukupno;
-  });
-});
 
 function dodajURacun(artikl) {
   const para = document.createElement("p");
@@ -43,6 +23,8 @@ function dodajURacun(artikl) {
 
   const btnDelete = document.createElement("button");
   btnDelete.textContent = "X";
+  // Da spriječimo da delete dugme okinu event listener na hranaAPI (ako je racun unutar njega)
+  btnDelete.stopPropagation = true;
 
   btnDelete.addEventListener("click", () => {
     racunElement.removeChild(para);
@@ -56,6 +38,7 @@ function dodajURacun(artikl) {
   para.appendChild(btnDelete);
   racunElement.appendChild(para);
 }
+
 function sacuvaj() {
   localStorage.setItem(key, JSON.stringify(narudzbe));
   localStorage.setItem(`ukupno2${key}`, ukupno);
@@ -80,91 +63,185 @@ window.onload = function () {
 
 const btnObrisiSve = document.getElementById("obrisiSve");
 
-btnObrisiSve.addEventListener("click", () => {
-  localStorage.removeItem(key);
-  localStorage.removeItem(oznaka);
+if (btnObrisiSve) {
+  // Provjera da ne puca kod ako dugme ne postoji
+  btnObrisiSve.addEventListener("click", () => {
+    localStorage.removeItem(key);
+    localStorage.removeItem(oznaka);
 
-  racunElement.innerHTML = "";
-  ukupno = 0;
-  ukupnoElement.textContent = ukupno;
+    racunElement.innerHTML = "";
+    ukupno = 0;
+    ukupnoElement.textContent = ukupno;
 
-  narudzbe = [];
+    narudzbe = [];
 
-  console.log(`racun za ovaj sto je obrisan ${key}`);
-});
+    console.log(`racun za ovaj sto je obrisan ${key}`);
+  });
+}
 
 const btnPlaceno = document.getElementById("placeno");
 
-btnPlaceno.addEventListener("click", () => {
-  localStorage.setItem(oznaka, true);
-  localStorage.setItem(`${key}ukupnaCijena`, ukupno);
-  console.log(localStorage.getItem(oznaka));
-  console.log(localStorage.getItem(`${key}ukupnaCijena`));
-});
-// Hrana iz API-ja
+if (btnPlaceno) {
+  // Provjera
+  btnPlaceno.addEventListener("click", () => {
+    localStorage.setItem(oznaka, true);
+    localStorage.setItem(`${key}ukupnaCijena`, ukupno);
+
+    localStorage.removeItem(`ukupno2${key}`);
+
+    localStorage.removeItem(key);
+    console.log(localStorage.getItem(oznaka));
+    console.log(localStorage.getItem(`${key}ukupnaCijena`));
+  });
+}
+
+// ---------------------------------------------------------
+// GENERISANJE HRANE (POPRAVLJENO)
+// ---------------------------------------------------------
+
 const hrana = JSON.parse(localStorage.getItem("hrana"));
-console.log(hrana[0].strMeal);
-console.log(hrana[1].strMeal);
-console.log(hrana[2].strMeal);
-//naziv 1
-let meal1 = document.createElement("p");
-meal1.textContent = hrana[0].strMeal;
-hranaAPIdiv.appendChild(meal1);
-//cijena 1
-let cijena1 = document.createElement("p");
-cijena1.textContent = 550;
-hranaAPIdiv.appendChild(cijena1);
-//napomena 1
-let napomena1 = document.createElement("input");
-napomena1.placeholder = "napomena";
-hranaAPIdiv.appendChild(napomena1);
-//kolicina 1
-let kolicina1 = document.createElement("input");
-kolicina1.placeholder = "kolicina";
-hranaAPIdiv.appendChild(kolicina1);
-//btn 1
-let btn1 = document.createElement("button");
-btn1.textContent = "dodaj";
-hranaAPIdiv.appendChild(btn1);
 
-//naziv 2
-let meal2 = document.createElement("p");
-meal2.textContent = hrana[1].strMeal;
-hranaAPIdiv.appendChild(meal2);
-//cijena 2
-let cijena2 = document.createElement("p");
-cijena2.textContent = 750;
-hranaAPIdiv.appendChild(cijena2);
-//napomena 2
-let napomena2 = document.createElement("input");
-napomena2.placeholder = "napomena";
-hranaAPIdiv.appendChild(napomena2);
-//kolicina 2
-let kolicina2 = document.createElement("input");
-kolicina2.placeholder = "kolicina";
-hranaAPIdiv.appendChild(kolicina2);
-//btn 2
-let btn2 = document.createElement("button");
-btn2.textContent = "dodaj";
-hranaAPIdiv.appendChild(btn2);
+if (hrana) {
+  // --- JELO 1 ---
+  // Pravimo div omotač za prvo jelo
+  let div1 = document.createElement("div");
+  div1.className = "jelo-item";
 
-//naziv 3
-let meal3 = document.createElement("p");
-meal2.textContent = hrana[2].strMeal;
-hranaAPIdiv.appendChild(meal3);
-//cijena 3
-let cijena3 = document.createElement("p");
-cijena3.textContent = 750;
-hranaAPIdiv.appendChild(cijena3);
-//napomena 3
-let napomena3 = document.createElement("input");
-napomena3.placeholder = "napomena";
-hranaAPIdiv.appendChild(napomena3);
-//kolicina 3
-let kolicina3 = document.createElement("input");
-kolicina3.placeholder = "kolicina";
-hranaAPIdiv.appendChild(kolicina3);
-//btn 3
-let btn3 = document.createElement("button");
-btn3.textContent = "dodaj";
-hranaAPIdiv.appendChild(btn3);
+  let meal1 = document.createElement("p");
+  meal1.className = "naziv";
+  meal1.textContent = hrana[0].strMeal;
+  div1.appendChild(meal1);
+
+  let cijena1 = document.createElement("p");
+  cijena1.className = "cijena";
+  cijena1.textContent = 550;
+  div1.appendChild(cijena1);
+
+  let napomena1 = document.createElement("input");
+  napomena1.className = "napomena";
+  napomena1.placeholder = "napomena";
+  div1.appendChild(napomena1);
+
+  let kolicina1 = document.createElement("input");
+  kolicina1.className = "kolicina";
+  kolicina1.placeholder = "kolicina";
+  div1.appendChild(kolicina1);
+
+  let btn1 = document.createElement("button");
+  btn1.textContent = "Dodaj";
+  btn1.className = "btn-dodaj-hranu"; // Dodajemo klasu da ga lakše prepoznamo
+  div1.appendChild(btn1);
+
+  hranaAPIdiv.appendChild(div1); // Dodajemo div1 u glavni div
+
+  // --- JELO 2 ---
+  // Pravimo div omotač za drugo jelo
+  let div2 = document.createElement("div");
+  div2.className = "jelo-item";
+
+  let meal2 = document.createElement("p");
+  meal2.className = "naziv"; // DODATA KLASA
+  meal2.textContent = hrana[1].strMeal;
+  div2.appendChild(meal2);
+
+  let cijena2 = document.createElement("p");
+  cijena2.className = "cijena"; // DODATA KLASA
+  cijena2.textContent = 750;
+  div2.appendChild(cijena2);
+
+  let napomena2 = document.createElement("input");
+  napomena2.className = "napomena"; // DODATA KLASA
+  napomena2.placeholder = "napomena";
+  div2.appendChild(napomena2);
+
+  let kolicina2 = document.createElement("input");
+  kolicina2.className = "kolicina"; // DODATA KLASA
+  kolicina2.placeholder = "kolicina";
+  div2.appendChild(kolicina2);
+
+  let btn2 = document.createElement("button");
+  btn2.textContent = "dodaj";
+  btn2.className = "btn-dodaj-hranu";
+  div2.appendChild(btn2);
+
+  hranaAPIdiv.appendChild(div2); // Dodajemo div2 u glavni div
+
+  // --- JELO 3 ---
+  // Pravimo div omotač za treće jelo
+  let div3 = document.createElement("div");
+  div3.className = "jelo-item";
+
+  let meal3 = document.createElement("p");
+  meal3.className = "naziv"; // DODATA KLASA
+  meal3.textContent = hrana[2].strMeal;
+  div3.appendChild(meal3);
+
+  let cijena3 = document.createElement("p");
+  cijena3.className = "cijena"; // DODATA KLASA
+  cijena3.textContent = 800;
+  div3.appendChild(cijena3);
+
+  let napomena3 = document.createElement("input");
+  napomena3.className = "napomena"; // DODATA KLASA
+  napomena3.placeholder = "napomena";
+  div3.appendChild(napomena3);
+
+  let kolicina3 = document.createElement("input");
+  kolicina3.className = "kolicina"; // DODATA KLASA
+  kolicina3.placeholder = "kolicina";
+  div3.appendChild(kolicina3);
+
+  let btn3 = document.createElement("button");
+  btn3.textContent = "dodaj";
+  btn3.className = "btn-dodaj-hranu";
+  div3.appendChild(btn3);
+
+  hranaAPIdiv.appendChild(div3); // Dodajemo div3 u glavni div
+}
+
+// ---------------------------------------------------------
+// EVENT LISTENER (UNIVERZALNA LOGIKA KLIKA ZA SVE)
+// ---------------------------------------------------------
+
+document.body.addEventListener("click", function (e) {
+  // Provjeravamo je li kliknuto na dugme "Dodaj" (ili "dodaj")
+  // Koristimo toLowerCase() da pokrijemo i velika i mala slova
+  if (
+    e.target.tagName === "BUTTON" &&
+    e.target.textContent.toLowerCase() === "dodaj"
+  ) {
+    const t = e.target.parentElement; // Ovo je div u kojem se nalazi dugme
+
+    // Tražimo elemente unutar tog diva
+    const nazivElement = t.querySelector(".naziv");
+    const cijenaElement = t.querySelector(".cijena");
+    const napomenaElement = t.querySelector(".napomena");
+    const kolicinaElement = t.querySelector(".kolicina");
+
+    // Provjera da li smo kliknuli na pravo dugme za narudžbu (da ne bi hvatali dugme "Obrisi sve" i sl.)
+    // Ako nema naziva i cijene pored dugmeta, onda to nije dugme za hranu/piće
+    if (nazivElement && cijenaElement) {
+      const naziv = nazivElement.textContent;
+      const cijena = parseFloat(cijenaElement.textContent);
+
+      // Napomena i količina su inputi, pa uzimamo .value
+      // Ako input za napomenu ne postoji (možda ga negdje nisi stavio), stavimo prazan string
+      const napomena = napomenaElement ? napomenaElement.value : "";
+
+      let kolicinaVal = kolicinaElement ? kolicinaElement.value : 1;
+      // Ako je polje prazno ili nije broj, računamo kao 1
+      const kolicina =
+        kolicinaVal && kolicinaVal > 0 ? parseInt(kolicinaVal) : 1;
+
+      const cijenaKolicina = cijena * kolicina;
+
+      const item = { naziv, napomena, kolicina, cijenaKolicina };
+
+      narudzbe.push(item);
+      dodajURacun(item);
+
+      ukupno += cijenaKolicina;
+      ukupnoElement.textContent = ukupno;
+    }
+  }
+});

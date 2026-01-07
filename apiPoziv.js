@@ -1,4 +1,4 @@
-const meals = ["Arrabiata", "Beef Lo Mein", "Chicken Handi"];
+const meals = ["Chicken", "Pasta", "Burger"];
 
 async function ucitavanjeHrane() {
   const res = [];
