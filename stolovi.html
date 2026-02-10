@@ -1,113 +1,139 @@
 <!DOCTYPE html>
-<head>
-  <link rel="stylesheet" href="stolovi.css" />
-  <h1>Izaberi sto:</h1>
-</head>
-<body>
-  <div class="stolovi">
-    <div class="row">
-      <div
-        id="sto1"
-        onclick="dodavanje('1')"
-        class="column"
-        style="background-color: #aaa"
-      >
-        <h2>STO 1</h2>
-      </div>
+<html lang="sr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Izaberi sto</title>
+    <link rel="stylesheet" href="stolovi.css" />
+  </head>
 
-      <div
-        id="sto2"
-        onclick="dodavanje('2')"
-        class="column"
-        style="background-color: #bbb"
-      >
-        <h2>STO 2</h2>
-      </div>
-      <div
-        id="sto3"
-        onclick="dodavanje('3')"
-        class="column"
-        style="background-color: #ccc"
-      >
-        <h2>STO 3</h2>
-      </div>
-      <div
-        id="sto4"
-        onclick="dodavanje('4')"
-        class="column"
-        style="background-color: #ddd"
-      >
-        <h2>STO 4</h2>
-      </div>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <button class="btn btn--ghost" id="btnNazad" type="button">
+          ← Nazad
+        </button>
+
+        <div class="topbar__title">
+          <h1>Izaberi sto</h1>
+          <p class="topbar__sub">
+            Zeleni = plaćeno · Narandžasti = otvoren · Sivi = slobodan
+          </p>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="card">
+          <div class="tables-grid">
+            <button
+              id="sto1"
+              class="table-card table-card--free"
+              data-sto="1"
+              type="button"
+            >
+              <span>STO 1</span>
+            </button>
+            <button
+              id="sto2"
+              class="table-card table-card--free"
+              data-sto="2"
+              type="button"
+            >
+              <span>STO 2</span>
+            </button>
+            <button
+              id="sto3"
+              class="table-card table-card--free"
+              data-sto="3"
+              type="button"
+            >
+              <span>STO 3</span>
+            </button>
+            <button
+              id="sto4"
+              class="table-card table-card--free"
+              data-sto="4"
+              type="button"
+            >
+              <span>STO 4</span>
+            </button>
+            <button
+              id="sto5"
+              class="table-card table-card--free"
+              data-sto="5"
+              type="button"
+            >
+              <span>STO 5</span>
+            </button>
+            <button
+              id="sto6"
+              class="table-card table-card--free"
+              data-sto="6"
+              type="button"
+            >
+              <span>STO 6</span>
+            </button>
+            <button
+              id="sto7"
+              class="table-card table-card--free"
+              data-sto="7"
+              type="button"
+            >
+              <span>STO 7</span>
+            </button>
+            <button
+              id="sto8"
+              class="table-card table-card--free"
+              data-sto="8"
+              type="button"
+            >
+              <span>STO 8</span>
+            </button>
+            <button
+              id="sto9"
+              class="table-card table-card--free"
+              data-sto="9"
+              type="button"
+            >
+              <span>STO 9</span>
+            </button>
+            <button
+              id="sto10"
+              class="table-card table-card--free"
+              data-sto="10"
+              type="button"
+            >
+              <span>STO 10</span>
+            </button>
+            <button
+              id="sto11"
+              class="table-card table-card--free"
+              data-sto="11"
+              type="button"
+            >
+              <span>STO 11</span>
+            </button>
+            <button
+              id="sto12"
+              class="table-card table-card--free"
+              data-sto="12"
+              type="button"
+            >
+              <span>STO 12</span>
+            </button>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span class="dot dot--paid"></span><span>Plaćeno</span>
+        <span class="sep">•</span>
+        <span class="dot dot--open"></span><span>Otvoreno</span>
+        <span class="sep">•</span>
+        <span class="dot dot--free"></span><span>Slobodno</span>
+      </footer>
     </div>
-    <div class="row">
-      <div
-        id="sto5"
-        onclick="dodavanje('5')"
-        class="column"
-        style="background-color: #aaa"
-      >
-        <h2>STO 5</h2>
-      </div>
-      <div
-        id="sto6"
-        onclick="dodavanje('6')"
-        class="column"
-        style="background-color: #bbb"
-      >
-        <h2>STO 6</h2>
-      </div>
-      <div
-        id="sto7"
-        onclick="dodavanje('7')"
-        class="column"
-        style="background-color: #ccc"
-      >
-        <h2>STO 7</h2>
-      </div>
-      <div
-        id="sto8"
-        onclick="dodavanje('8')"
-        class="column"
-        style="background-color: #ddd"
-      >
-        <h2>STO 8</h2>
-      </div>
-    </div>
-    <div class="row">
-      <div
-        id="sto9"
-        onclick="dodavanje('9')"
-        class="column"
-        style="background-color: #aaa"
-      >
-        <h2>STO 9</h2>
-      </div>
-      <div
-        id="sto10"
-        onclick="dodavanje('10')"
-        class="column"
-        style="background-color: #bbb"
-      >
-        <h2>STO 10</h2>
-      </div>
-      <div
-        id="sto11"
-        onclick="dodavanje('11')"
-        class="column"
-        style="background-color: #ccc"
-      >
-        <h2>STO 11</h2>
-      </div>
-      <div
-        id="sto12"
-        onclick="dodavanje('12')"
-        class="column"
-        style="background-color: #ddd"
-      >
-        <h2>STO 12</h2>
-      </div>
-    </div>
-  </div>
-  <script src="stolovi.js"></script>
-</body>
+
+    <script src="stolovi.js"></script>
+  </body>
+</html>

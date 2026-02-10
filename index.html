@@ -1,27 +1,123 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="sr">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Garson – Početna</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <div class="izborKoDiv">
-    <button onclick="izborPadajuciMeni()" class="PMbtn">
-      IZABERI KONOBARA
-    </button>
-    <button onclick="sledecaStranica()">IZABERI STO</button>
-    <div id="PLista" class="PL-konobari">
-      <a href="#Meni" onclick="izabraniKonobar('Mina')">Mina</a>
-      <a href="#Meni" onclick="izabraniKonobar('Luka')">Luka</a>
-      <a href="#Meni" onclick="izabraniKonobar('Ana')">Ana</a>
-    </div>
-  </div>
+
   <body>
-    <div>
-      <p id="stolovi">Otvoreni stolovi:</p>
-      <p id="naplaceno">naplaceni stolovi:</p>
-      <p id="nenaplaceno">Nenaplaceno(otvoreni Stolovi):</p>
-      </div>
+    <div class="page">
+      <header class="topbar">
+        <div class="topbar__title">
+          <h1>Garson</h1>
+          <p class="topbar__sub">Brz izbor konobara i pregled stanja stolova</p>
+        </div>
+
+        <div class="topbar__right">
+          <span class="pill" id="pillKonobar">Nije izabran konobar</span>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="card">
+          <div class="hero">
+            <div class="hero__left">
+              <h2 class="hero__headline">
+                Izaberi konobara i nastavi na stolove
+              </h2>
+              <p class="hero__text"></p>
+
+              <div class="actions">
+                <div class="dropdown">
+                  <button
+                    class="btn btn--primary"
+                    id="btnDropdown"
+                    type="button"
+                  >
+                    Izaberi konobara
+                    <span class="chev">▾</span>
+                  </button>
+
+                  <div class="menu" id="menuKonobari">
+                    <button
+                      class="menu__item"
+                      type="button"
+                      data-konobar="Mina"
+                    >
+                      Mina
+                    </button>
+                    <button
+                      class="menu__item"
+                      type="button"
+                      data-konobar="Luka"
+                    >
+                      Luka
+                    </button>
+                    <button class="menu__item" type="button" data-konobar="Ana">
+                      Ana
+                    </button>
+                  </div>
+                </div>
+
+                <button class="btn btn--ghost" id="btnSto" type="button">
+                  Izaberi sto →
+                </button>
+              </div>
+            </div>
+
+            <div class="hero__right">
+              <div class="stats">
+                <div class="stat">
+                  <div class="stat__label">Otvoreni stolovi</div>
+                  <div class="stat__value" id="otvoreniCount">0</div>
+                </div>
+
+                <div class="stat stat--paid">
+                  <div class="stat__label">Ukupno naplaćeno</div>
+                  <div class="stat__value" id="ukupnoPlaceno">0</div>
+                </div>
+
+                <div class="stat stat--open">
+                  <div class="stat__label">Nenaplaćeno ukupno</div>
+                  <div class="stat__value" id="ukupnoNenaplaceno">0</div>
+                </div>
+              </div>
+
+              <div class="hint">
+                <span class="dot dot--paid"></span><span>Plaćeno</span>
+                <span class="sep">•</span>
+                <span class="dot dot--open"></span><span>Otvoreno</span>
+                <span class="sep">•</span>
+                <span class="dot dot--free"></span><span>Slobodno</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card card--mini">
+          <div class="mini-row">
+            <div>
+              <h3 class="mini-title">Brzi pregled</h3>
+              <p class="mini-sub"></p>
+            </div>
+            <button class="btn btn--ghost" id="btnResetKonobar" type="button">
+              Reset konobara
+            </button>
+          </div>
+
+          <div class="mini-list">
+            <p id="stolovi" class="mini-line">Otvoreni stolovi: —</p>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span>GarsonCopy • UI theme: primary/accent/danger</span>
+      </footer>
     </div>
+
     <script src="index.js"></script>
   </body>
 </html>

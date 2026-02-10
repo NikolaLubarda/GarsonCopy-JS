@@ -1,55 +1,143 @@
+// narudzba.js
+import { initApis } from "./apiPoziv.js";
+
+function getKonobar() {
+  return localStorage.getItem("konobar");
+}
+function getSto() {
+  return localStorage.getItem("sto");
+}
+function ns(konobar) {
+  return `k:${konobar}:`;
+}
+function kOrder(konobar, sto) {
+  return `${ns(konobar)}${sto}`;
+}
+function kPaidFlag(konobar, sto) {
+  return `${ns(konobar)}${sto}oznaka`;
+}
+function kPaidTotal(konobar, sto) {
+  return `${ns(konobar)}${sto}ukupnaCijena`;
+}
+function kUnpaidTotal(konobar, sto) {
+  return `${ns(konobar)}ukupno2${sto}`;
+}
+
 const konobarElement = document.getElementById("konobar1");
-const konobar = localStorage.getItem("konobar");
-konobarElement.innerHTML = `Konobar: ${konobar}`;
-let hranaAPIdiv = document.getElementById("hranaAPI");
-
 const stoElement = document.getElementById("sto");
-const sto = localStorage.getItem("sto");
-stoElement.innerHTML = `Broj stola: ${sto}`;
 
-const key = sto;
+const racunElement = document.getElementById("racun");
+const ukupnoElement = document.querySelector(".ukupno1");
 
-let racunElement = document.getElementById("racun");
-// const btns = document.querySelectorAll("button"); // OVO NAM VIŠE NE TREBA OVDJE
-let ukupnoElement = document.querySelector(".ukupno1");
+const hranaAPIdiv = document.getElementById("hranaAPI");
+const kokteliAPIdiv = document.getElementById("kokteliAPI");
 
+const btnObrisiSve = document.getElementById("obrisiSve");
+const btnPlaceno = document.getElementById("placeno");
+const btnSacuvaj = document.getElementById("btnSacuvaj");
+
+const btnNazad = document.getElementById("btnNazad");
+const btnRefreshApi = document.getElementById("btnRefreshApi");
+
+const menuSearch = document.getElementById("menuSearch");
+const btnClearSearch = document.getElementById("btnClearSearch");
+
+const btnCopyRacun = document.getElementById("btnCopyRacun");
+const btnPrintRacun = document.getElementById("btnPrintRacun");
+
+/* --------------------------------------------------
+   KONOBAR / STO
+-------------------------------------------------- */
+const konobar = getKonobar();
+const sto = getSto();
+
+if (!konobar) window.location.href = "./index.html";
+if (!sto) window.location.href = "./stolovi.html";
+
+konobarElement.textContent = `Konobar: ${konobar}`;
+stoElement.textContent = `Broj stola: ${sto}`;
+
+const ORDER_KEY = kOrder(konobar, sto);
+const PAID_FLAG_KEY = kPaidFlag(konobar, sto);
+const PAID_TOTAL_KEY = kPaidTotal(konobar, sto);
+const UNPAID_TOTAL_KEY = kUnpaidTotal(konobar, sto);
+
+/* --------------------------------------------------
+   STATE
+-------------------------------------------------- */
 let ukupno = 0;
 let narudzbe = [];
-let oznaka = key + "oznaka";
 
+/* --------------------------------------------------
+   NAZAD
+-------------------------------------------------- */
+btnNazad.addEventListener("click", () => {
+  if (history.length > 1) history.back();
+  else window.location.href = "./stolovi.html";
+});
+
+/* --------------------------------------------------
+   TABOVI
+-------------------------------------------------- */
+function initTabs() {
+  const tabs = document.querySelectorAll(".tab");
+  const panes = {
+    pice: document.getElementById("pane-pice"),
+    hrana: document.getElementById("pane-hrana"),
+    kokteli: document.getElementById("pane-kokteli"),
+  };
+
+  tabs.forEach((t) => {
+    t.addEventListener("click", () => {
+      tabs.forEach((x) => x.classList.remove("tab--active"));
+      t.classList.add("tab--active");
+
+      const tabKey = t.getAttribute("data-tab");
+      Object.values(panes).forEach((p) => p.classList.remove("pane--active"));
+      panes[tabKey].classList.add("pane--active");
+
+      // re-apply search on new tab
+      applyMenuFilter(menuSearch?.value || "");
+    });
+  });
+}
+initTabs();
+
+/* --------------------------------------------------
+   RACUN UI
+-------------------------------------------------- */
 function dodajURacun(artikl) {
-  const para = document.createElement("p");
-  para.textContent = `Artikl: ${artikl.naziv} | Napomena: ${artikl.napomena} | Količina: ${artikl.kolicina} | Cijena: ${artikl.cijenaKolicina}`;
+  const row = document.createElement("div");
+  row.className = "racun-item";
+
+  const text = document.createElement("p");
+  text.className = "racun-item__text";
+  text.textContent = `Artikl: ${artikl.naziv} | Napomena: ${artikl.napomena} | Količina: ${artikl.kolicina} | Cijena: ${artikl.cijenaKolicina}`;
 
   const btnDelete = document.createElement("button");
+  btnDelete.className = "btn btn--danger";
+  btnDelete.type = "button";
   btnDelete.textContent = "X";
-  // Da spriječimo da delete dugme okinu event listener na hranaAPI (ako je racun unutar njega)
-  btnDelete.stopPropagation = true;
 
-  btnDelete.addEventListener("click", () => {
-    racunElement.removeChild(para);
-
-    narudzbe = narudzbe.filter((nar) => nar !== artikl);
-
+  btnDelete.addEventListener("click", (e) => {
+    e.stopPropagation();
+    row.remove();
+    narudzbe = narudzbe.filter((n) => n !== artikl);
     ukupno -= artikl.cijenaKolicina;
     ukupnoElement.textContent = ukupno;
   });
 
-  para.appendChild(btnDelete);
-  racunElement.appendChild(para);
+  row.append(text, btnDelete);
+  racunElement.appendChild(row);
 }
 
-function sacuvaj() {
-  localStorage.setItem(key, JSON.stringify(narudzbe));
-  localStorage.setItem(`ukupno2${key}`, ukupno);
-  console.log(localStorage.getItem(`ukupno2${key}`) + "radi");
-  console.log(`Račun za sto ${key} sačuvan`, localStorage.getItem(key));
-  localStorage.removeItem(oznaka);
-}
-
-window.onload = function () {
-  const sacuvano = JSON.parse(localStorage.getItem(key)) || [];
+/* --------------------------------------------------
+   INIT RACUN IZ STORAGE
+-------------------------------------------------- */
+function initRacunIzStorage() {
+  const sacuvano = JSON.parse(localStorage.getItem(ORDER_KEY)) || [];
   racunElement.innerHTML = "";
+  narudzbe = [];
   ukupno = 0;
 
   sacuvano.forEach((artikl) => {
@@ -59,189 +147,257 @@ window.onload = function () {
   });
 
   ukupnoElement.textContent = ukupno;
-};
+}
+initRacunIzStorage();
 
-const btnObrisiSve = document.getElementById("obrisiSve");
+/* --------------------------------------------------
+   SACUVAJ -> NARANDŽAST (otvoren)
+-------------------------------------------------- */
+function sacuvaj() {
+  localStorage.setItem(ORDER_KEY, JSON.stringify(narudzbe));
+  localStorage.setItem(UNPAID_TOTAL_KEY, ukupno);
 
-if (btnObrisiSve) {
-  // Provjera da ne puca kod ako dugme ne postoji
-  btnObrisiSve.addEventListener("click", () => {
-    localStorage.removeItem(key);
-    localStorage.removeItem(oznaka);
+  // ukloni markere "plaćeno" da bude otvoren
+  localStorage.removeItem(PAID_FLAG_KEY);
+  localStorage.removeItem(PAID_TOTAL_KEY);
+}
+btnSacuvaj.addEventListener("click", sacuvaj);
 
-    racunElement.innerHTML = "";
-    ukupno = 0;
-    ukupnoElement.textContent = ukupno;
+/* --------------------------------------------------
+   PLAĆENO -> ZELEN
+-------------------------------------------------- */
+btnPlaceno.addEventListener("click", () => {
+  localStorage.setItem(PAID_FLAG_KEY, "true");
+  localStorage.setItem(PAID_TOTAL_KEY, ukupno);
 
-    narudzbe = [];
+  localStorage.removeItem(UNPAID_TOTAL_KEY);
+  localStorage.removeItem(ORDER_KEY);
 
-    console.log(`racun za ovaj sto je obrisan ${key}`);
+  window.location.href = "./stolovi.html";
+});
+
+/* --------------------------------------------------
+   OBRIŠI SVE
+-------------------------------------------------- */
+btnObrisiSve.addEventListener("click", () => {
+  localStorage.removeItem(ORDER_KEY);
+  localStorage.removeItem(PAID_FLAG_KEY);
+  localStorage.removeItem(PAID_TOTAL_KEY);
+  localStorage.removeItem(UNPAID_TOTAL_KEY);
+
+  racunElement.innerHTML = "";
+  narudzbe = [];
+  ukupno = 0;
+  ukupnoElement.textContent = ukupno;
+});
+
+/* --------------------------------------------------
+   API INIT + RENDER
+-------------------------------------------------- */
+async function initApiData(force = false) {
+  const { hrana, kokteli } = await initApis({ force });
+
+  hranaAPIdiv.innerHTML = "";
+  kokteliAPIdiv.innerHTML = "";
+
+  renderHranaApi(hrana || []);
+  renderKokteliApi(kokteli || []);
+
+  applyMenuFilter(menuSearch?.value || "");
+}
+initApiData();
+
+btnRefreshApi.addEventListener("click", () => initApiData(true));
+
+function makeApiCard({ naziv, cijena }) {
+  const wrap = document.createElement("div");
+  wrap.className = "item-card";
+
+  const nameEl = document.createElement("div");
+  nameEl.className = "item-card__name naziv";
+  nameEl.textContent = naziv;
+
+  const priceEl = document.createElement("div");
+  priceEl.className = "item-card__price cijena";
+  priceEl.textContent = String(cijena);
+
+  const napomena = document.createElement("input");
+  napomena.className = "input napomena";
+  napomena.placeholder = "napomena";
+
+  const kolicina = document.createElement("input");
+  kolicina.className = "input kolicina";
+  kolicina.type = "number";
+  kolicina.min = "1";
+  kolicina.placeholder = "količina";
+
+  const btn = document.createElement("button");
+  btn.className = "btn btn--primary btn-dodaj-hranu";
+  btn.type = "button";
+  btn.textContent = "Dodaj";
+
+  wrap.append(nameEl, priceEl, napomena, kolicina, btn);
+  return wrap;
+}
+
+function renderHranaApi(hrana) {
+  hrana.slice(0, 6).forEach((m, idx) => {
+    hranaAPIdiv.appendChild(
+      makeApiCard({
+        naziv: m.strMeal || `Jelo ${idx + 1}`,
+        cijena: 600 + idx * 80,
+      })
+    );
   });
 }
 
-const btnPlaceno = document.getElementById("placeno");
-
-if (btnPlaceno) {
-  // Provjera
-  btnPlaceno.addEventListener("click", () => {
-    localStorage.setItem(oznaka, true);
-    localStorage.setItem(`${key}ukupnaCijena`, ukupno);
-
-    localStorage.removeItem(`ukupno2${key}`);
-
-    localStorage.removeItem(key);
-    console.log(localStorage.getItem(oznaka));
-    console.log(localStorage.getItem(`${key}ukupnaCijena`));
+function renderKokteliApi(kokteli) {
+  kokteli.slice(0, 6).forEach((d, idx) => {
+    kokteliAPIdiv.appendChild(
+      makeApiCard({
+        naziv: d.strDrink || `Koktel ${idx + 1}`,
+        cijena: 450 + idx * 40,
+      })
+    );
   });
 }
 
-// ---------------------------------------------------------
-// GENERISANJE HRANE (POPRAVLJENO)
-// ---------------------------------------------------------
+/* --------------------------------------------------
+   DODAJ 
+-------------------------------------------------- */
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
 
-const hrana = JSON.parse(localStorage.getItem("hrana"));
+  const isAdd =
+    btn.classList.contains("btn-dodaj-hranu") ||
+    (btn.textContent || "").trim().toLowerCase() === "dodaj";
 
-if (hrana) {
-  // --- JELO 1 ---
-  // Pravimo div omotač za prvo jelo
-  let div1 = document.createElement("div");
-  div1.className = "jelo-item";
+  if (!isAdd) return;
 
-  let meal1 = document.createElement("p");
-  meal1.className = "naziv";
-  meal1.textContent = hrana[0].strMeal;
-  div1.appendChild(meal1);
+  const card = btn.closest(".item-card");
+  if (!card) return;
 
-  let cijena1 = document.createElement("p");
-  cijena1.className = "cijena";
-  cijena1.textContent = 550;
-  div1.appendChild(cijena1);
+  const nazivEl = card.querySelector(".naziv");
+  const cijenaEl = card.querySelector(".cijena");
+  if (!nazivEl || !cijenaEl) return;
 
-  let napomena1 = document.createElement("input");
-  napomena1.className = "napomena";
-  napomena1.placeholder = "napomena";
-  div1.appendChild(napomena1);
+  const naziv = nazivEl.textContent.trim();
+  const cijena = parseFloat(cijenaEl.textContent);
+  const napomena = card.querySelector(".napomena")?.value || "";
 
-  let kolicina1 = document.createElement("input");
-  kolicina1.className = "kolicina";
-  kolicina1.placeholder = "kolicina";
-  div1.appendChild(kolicina1);
+  const kolRaw = card.querySelector(".kolicina")?.value;
+  const kol = kolRaw && parseInt(kolRaw) > 0 ? parseInt(kolRaw) : 1;
 
-  let btn1 = document.createElement("button");
-  btn1.textContent = "Dodaj";
-  btn1.className = "btn-dodaj-hranu"; // Dodajemo klasu da ga lakše prepoznamo
-  div1.appendChild(btn1);
+  const cijenaKolicina = cijena * kol;
+  const item = { naziv, napomena, kolicina: kol, cijenaKolicina };
 
-  hranaAPIdiv.appendChild(div1); // Dodajemo div1 u glavni div
+  narudzbe.push(item);
+  dodajURacun(item);
 
-  // --- JELO 2 ---
-  // Pravimo div omotač za drugo jelo
-  let div2 = document.createElement("div");
-  div2.className = "jelo-item";
+  ukupno += cijenaKolicina;
+  ukupnoElement.textContent = ukupno;
 
-  let meal2 = document.createElement("p");
-  meal2.className = "naziv"; // DODATA KLASA
-  meal2.textContent = hrana[1].strMeal;
-  div2.appendChild(meal2);
+  // resetza sev
+  const kEl = card.querySelector(".kolicina");
+  if (kEl) kEl.value = "";
+  const nEl = card.querySelector(".napomena");
+  if (nEl) nEl.value = "";
+});
 
-  let cijena2 = document.createElement("p");
-  cijena2.className = "cijena"; // DODATA KLASA
-  cijena2.textContent = 750;
-  div2.appendChild(cijena2);
-
-  let napomena2 = document.createElement("input");
-  napomena2.className = "napomena"; // DODATA KLASA
-  napomena2.placeholder = "napomena";
-  div2.appendChild(napomena2);
-
-  let kolicina2 = document.createElement("input");
-  kolicina2.className = "kolicina"; // DODATA KLASA
-  kolicina2.placeholder = "kolicina";
-  div2.appendChild(kolicina2);
-
-  let btn2 = document.createElement("button");
-  btn2.textContent = "dodaj";
-  btn2.className = "btn-dodaj-hranu";
-  div2.appendChild(btn2);
-
-  hranaAPIdiv.appendChild(div2); // Dodajemo div2 u glavni div
-
-  // --- JELO 3 ---
-  // Pravimo div omotač za treće jelo
-  let div3 = document.createElement("div");
-  div3.className = "jelo-item";
-
-  let meal3 = document.createElement("p");
-  meal3.className = "naziv"; // DODATA KLASA
-  meal3.textContent = hrana[2].strMeal;
-  div3.appendChild(meal3);
-
-  let cijena3 = document.createElement("p");
-  cijena3.className = "cijena"; // DODATA KLASA
-  cijena3.textContent = 800;
-  div3.appendChild(cijena3);
-
-  let napomena3 = document.createElement("input");
-  napomena3.className = "napomena"; // DODATA KLASA
-  napomena3.placeholder = "napomena";
-  div3.appendChild(napomena3);
-
-  let kolicina3 = document.createElement("input");
-  kolicina3.className = "kolicina"; // DODATA KLASA
-  kolicina3.placeholder = "kolicina";
-  div3.appendChild(kolicina3);
-
-  let btn3 = document.createElement("button");
-  btn3.textContent = "dodaj";
-  btn3.className = "btn-dodaj-hranu";
-  div3.appendChild(btn3);
-
-  hranaAPIdiv.appendChild(div3); // Dodajemo div3 u glavni div
+/* --------------------------------------------------
+   SEARCH MENI 
+-------------------------------------------------- */
+function normalize(s) {
+  return (s || "").toString().trim().toLowerCase();
 }
 
-// ---------------------------------------------------------
-// EVENT LISTENER (UNIVERZALNA LOGIKA KLIKA ZA SVE)
-// ---------------------------------------------------------
+function getActivePane() {
+  return document.querySelector(".pane.pane--active");
+}
 
-document.body.addEventListener("click", function (e) {
-  // Provjeravamo je li kliknuto na dugme "Dodaj" (ili "dodaj")
-  // Koristimo toLowerCase() da pokrijemo i velika i mala slova
-  if (
-    e.target.tagName === "BUTTON" &&
-    e.target.textContent.toLowerCase() === "dodaj"
-  ) {
-    const t = e.target.parentElement; // Ovo je div u kojem se nalazi dugme
+function applyMenuFilter(query) {
+  const q = normalize(query);
+  const pane = getActivePane();
+  if (!pane) return;
 
-    // Tražimo elemente unutar tog diva
-    const nazivElement = t.querySelector(".naziv");
-    const cijenaElement = t.querySelector(".cijena");
-    const napomenaElement = t.querySelector(".napomena");
-    const kolicinaElement = t.querySelector(".kolicina");
+  const cards = pane.querySelectorAll(".item-card");
 
-    // Provjera da li smo kliknuli na pravo dugme za narudžbu (da ne bi hvatali dugme "Obrisi sve" i sl.)
-    // Ako nema naziva i cijene pored dugmeta, onda to nije dugme za hranu/piće
-    if (nazivElement && cijenaElement) {
-      const naziv = nazivElement.textContent;
-      const cijena = parseFloat(cijenaElement.textContent);
+  cards.forEach((card) => {
+    const nameEl = card.querySelector(".naziv");
+    const name = normalize(nameEl ? nameEl.textContent : "");
+    const show = !q || name.includes(q);
+    card.style.display = show ? "" : "none";
+  });
+}
 
-      // Napomena i količina su inputi, pa uzimamo .value
-      // Ako input za napomenu ne postoji (možda ga negdje nisi stavio), stavimo prazan string
-      const napomena = napomenaElement ? napomenaElement.value : "";
+if (menuSearch) {
+  menuSearch.addEventListener("input", (e) => {
+    applyMenuFilter(e.target.value);
+  });
+}
 
-      let kolicinaVal = kolicinaElement ? kolicinaElement.value : 1;
-      // Ako je polje prazno ili nije broj, računamo kao 1
-      const kolicina =
-        kolicinaVal && kolicinaVal > 0 ? parseInt(kolicinaVal) : 1;
+if (btnClearSearch) {
+  btnClearSearch.addEventListener("click", () => {
+    menuSearch.value = "";
+    applyMenuFilter("");
+    menuSearch.focus();
+  });
+}
 
-      const cijenaKolicina = cijena * kolicina;
+/* --------------------------------------------------
+   COPY + PRINT RAČUNA
+-------------------------------------------------- */
+function buildReceiptText() {
+  const lines = [];
+  lines.push("GARSON RAČUN");
+  lines.push(`Konobar: ${konobar}`);
+  lines.push(`Sto: ${sto}`);
+  lines.push("--------------------------------");
 
-      const item = { naziv, napomena, kolicina, cijenaKolicina };
-
-      narudzbe.push(item);
-      dodajURacun(item);
-
-      ukupno += cijenaKolicina;
-      ukupnoElement.textContent = ukupno;
-    }
+  if (!narudzbe.length) {
+    lines.push("(Nema stavki)");
+  } else {
+    narudzbe.forEach((it, idx) => {
+      const nap = it.napomena ? ` | ${it.napomena}` : "";
+      lines.push(
+        `${idx + 1}. ${it.naziv} x${it.kolicina} = ${it.cijenaKolicina}${nap}`
+      );
+    });
   }
+
+  lines.push("--------------------------------");
+  lines.push(`UKUPNO: ${ukupno}`);
+  return lines.join("\n");
+}
+
+async function copyToClipboard(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    await navigator.clipboard.writeText(text);
+    return true;
+  }
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.position = "fixed";
+  ta.style.left = "-9999px";
+  document.body.appendChild(ta);
+  ta.select();
+  const ok = document.execCommand("copy");
+  document.body.removeChild(ta);
+  return ok;
+}
+
+btnCopyRacun.addEventListener("click", async () => {
+  const text = buildReceiptText();
+  try {
+    await copyToClipboard(text);
+    btnCopyRacun.textContent = "Kopirano ✅";
+    setTimeout(() => (btnCopyRacun.textContent = "Kopiraj račun"), 1200);
+  } catch (e) {
+    alert("Ne mogu kopirati račun. Probaj Print.");
+  }
+});
+
+btnPrintRacun.addEventListener("click", () => {
+  window.print();
 });

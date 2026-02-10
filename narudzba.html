@@ -1,102 +1,258 @@
 <!DOCTYPE html>
-<html>
+<html lang="sr">
   <head>
-    <h1 id="konobar1"></h1>
-    <h2 id="sto"></h2>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Narudžba</title>
+    <link rel="stylesheet" href="narudzba.css" />
   </head>
+
   <body>
-    <div>
-      <h1 class="piće">Piće</h1>
-      <div class="div">
-        <p class="naziv">Coca-Cola</p>
-        <p class="cijena">300</p>
-        <input class="napomena" type="text" placeholder="napomena" />
-        <input class="kolicina" type="number" placeholder="kolicina" />
-        <button>Dodaj</button>
-      </div>
-      <div class="div">
-        <p class="naziv">Fanta</p>
-        <p class="cijena">310</p>
-        <input class="napomena" type="text" placeholder="napomena" />
-        <input class="kolicina" type="number" placeholder="kolicina" />
-        <button>Dodaj</button>
-      </div>
-      <div class="div">
-        <p class="naziv">Kafa</p>
-        <p class="cijena">320</p>
-        <input class="napomena" type="text" placeholder="napomena" />
-        <input class="kolicina" type="number" placeholder="kolicina" />
-        <button>Dodaj</button>
-      </div>
+    <div class="page">
+      <header class="topbar">
+        <button class="btn btn--ghost" id="btnNazad" type="button">
+          ← Nazad
+        </button>
+
+        <div class="topbar__title">
+          <h1>Narudžba</h1>
+          <p class="topbar__sub">
+            <span id="konobar1">Konobar: —</span>
+            <span class="sep">•</span>
+            <span id="sto">Broj stola: —</span>
+          </p>
+        </div>
+
+        <button class="btn btn--outline" id="btnRefreshApi" type="button">
+          ↻ Refresh API
+        </button>
+      </header>
+
+      <main class="layout">
+        <!-- LIJEVO: MENI  -->
+        <section class="card menu">
+          <div class="tabs" role="tablist">
+            <button class="tab tab--active" data-tab="pice" type="button">
+              Piće
+            </button>
+            <button class="tab" data-tab="hrana" type="button">Hrana</button>
+            <button class="tab" data-tab="kokteli" type="button">
+              Kokteli
+            </button>
+          </div>
+
+          <!-- SEARCH -->
+          <div class="menu-tools">
+            <input
+              id="menuSearch"
+              class="input input--search"
+              type="text"
+              placeholder="Pretraži meni (npr. pizza, cola, mojito)..."
+            />
+            <button class="btn btn--ghost" id="btnClearSearch" type="button">
+              Očisti
+            </button>
+          </div>
+
+          <div class="tabpanes">
+            <!-- Piće -->
+            <div class="pane pane--active" id="pane-pice">
+              <h2 class="section-title">Piće</h2>
+              <div class="items-grid">
+                <div class="item-card">
+                  <div class="item-card__name naziv">Coca-Cola</div>
+                  <div class="item-card__price cijena">300</div>
+                  <input
+                    class="input napomena"
+                    type="text"
+                    placeholder="napomena"
+                  />
+                  <input
+                    class="input kolicina"
+                    type="number"
+                    min="1"
+                    placeholder="količina"
+                  />
+                  <button
+                    class="btn btn--primary btn-dodaj-hranu"
+                    type="button"
+                  >
+                    Dodaj
+                  </button>
+                </div>
+
+                <div class="item-card">
+                  <div class="item-card__name naziv">Fanta</div>
+                  <div class="item-card__price cijena">310</div>
+                  <input
+                    class="input napomena"
+                    type="text"
+                    placeholder="napomena"
+                  />
+                  <input
+                    class="input kolicina"
+                    type="number"
+                    min="1"
+                    placeholder="količina"
+                  />
+                  <button
+                    class="btn btn--primary btn-dodaj-hranu"
+                    type="button"
+                  >
+                    Dodaj
+                  </button>
+                </div>
+
+                <div class="item-card">
+                  <div class="item-card__name naziv">Kafa</div>
+                  <div class="item-card__price cijena">320</div>
+                  <input
+                    class="input napomena"
+                    type="text"
+                    placeholder="napomena"
+                  />
+                  <input
+                    class="input kolicina"
+                    type="number"
+                    min="1"
+                    placeholder="količina"
+                  />
+                  <button
+                    class="btn btn--primary btn-dodaj-hranu"
+                    type="button"
+                  >
+                    Dodaj
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hrana -->
+            <div class="pane" id="pane-hrana">
+              <h2 class="section-title">Hrana</h2>
+
+              <h3 class="group-title">Popularno</h3>
+              <div class="items-grid">
+                <div class="item-card">
+                  <div class="item-card__name naziv">Pizza</div>
+                  <div class="item-card__price cijena">850</div>
+                  <input
+                    class="input napomena"
+                    type="text"
+                    placeholder="napomena"
+                  />
+                  <input
+                    class="input kolicina"
+                    type="number"
+                    min="1"
+                    placeholder="količina"
+                  />
+                  <button
+                    class="btn btn--primary btn-dodaj-hranu"
+                    type="button"
+                  >
+                    Dodaj
+                  </button>
+                </div>
+
+                <div class="item-card">
+                  <div class="item-card__name naziv">Sendvič</div>
+                  <div class="item-card__price cijena">820</div>
+                  <input
+                    class="input napomena"
+                    type="text"
+                    placeholder="napomena"
+                  />
+                  <input
+                    class="input kolicina"
+                    type="number"
+                    min="1"
+                    placeholder="količina"
+                  />
+                  <button
+                    class="btn btn--primary btn-dodaj-hranu"
+                    type="button"
+                  >
+                    Dodaj
+                  </button>
+                </div>
+
+                <div class="item-card">
+                  <div class="item-card__name naziv">Piletina</div>
+                  <div class="item-card__price cijena">720</div>
+                  <input
+                    class="input napomena"
+                    type="text"
+                    placeholder="napomena"
+                  />
+                  <input
+                    class="input kolicina"
+                    type="number"
+                    min="1"
+                    placeholder="količina"
+                  />
+                  <button
+                    class="btn btn--primary btn-dodaj-hranu"
+                    type="button"
+                  >
+                    Dodaj
+                  </button>
+                </div>
+              </div>
+
+              <h3 class="group-title">Hrana (API)</h3>
+              <div class="items-grid" id="hranaAPI"></div>
+            </div>
+
+            <!-- Kokteli -->
+            <div class="pane" id="pane-kokteli">
+              <h2 class="section-title">Kokteli</h2>
+              <h3 class="group-title">Kokteli (API)</h3>
+              <div class="items-grid" id="kokteliAPI"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- DESNO: RAUČN -->
+        <aside class="card bill">
+          <div class="bill__header">
+            <h2 class="section-title">Račun</h2>
+            <p class="bill__sub">Stavke za odabrani sto</p>
+          </div>
+
+          <div id="racun" class="bill__list"></div>
+
+          <div class="bill__footer">
+            <div class="total">
+              <span class="total__label">UKUPNO</span>
+              <span class="total__value ukupno1">0</span>
+            </div>
+
+            <div class="bill__actions">
+              <button class="btn btn--ghost" id="obrisiSve" type="button">
+                Obriši sve
+              </button>
+              <button class="btn btn--outline" id="placeno" type="button">
+                Plaćeno
+              </button>
+
+              <button class="btn btn--ghost" id="btnCopyRacun" type="button">
+                Kopiraj račun
+              </button>
+              <button class="btn btn--outline" id="btnPrintRacun" type="button">
+                Print
+              </button>
+
+              <button class="btn btn--primary" id="btnSacuvaj" type="button">
+                Sačuvaj
+              </button>
+            </div>
+          </div>
+        </aside>
+      </main>
     </div>
-    <div>
-      <h1>Hrana</h1>
 
-      <div class="stavka">
-        <p class="naziv">Pizza</p>
-        <p class="cijena">850</p>
-        <input class="napomena" type="text" placeholder="napomena" />
-        <input class="kolicina" type="number" placeholder="kolicina" />
-        <button>Dodaj</button>
-      </div>
-
-      <div class="stavka">
-        <p class="naziv">Sendvič</p>
-        <p class="cijena">820</p>
-        <input class="napomena" type="text" placeholder="napomena" />
-        <input class="kolicina" type="number" placeholder="kolicina" />
-        <button>Dodaj</button>
-      </div>
-
-      <div class="stavka">
-        <p class="naziv">Piletina</p>
-        <p class="cijena">720</p>
-        <input class="napomena" type="text" placeholder="napomena" />
-        <input class="kolicina" type="number" placeholder="kolicina" />
-        <button>Dodaj</button>
-      </div>
-    </div>
-
-    <div>
-      <h1>Dezert</h1>
-
-      <div class="stavka">
-        <p class="naziv">Krempita</p>
-        <p class="cijena">320</p>
-        <input class="napomena" type="text" placeholder="napomena" />
-        <input class="kolicina" type="number" placeholder="kolicina" />
-        <button>Dodaj</button>
-      </div>
-
-      <div class="stavka">
-        <p class="naziv">Sladoled</p>
-        <p class="cijena">420</p>
-        <input class="napomena" type="text" placeholder="napomena" />
-        <input class="kolicina" type="number" placeholder="kolicina" />
-        <button>Dodaj</button>
-      </div>
-
-      <div class="stavka">
-        <p class="naziv">Palačinke</p>
-        <p class="cijena">520</p>
-        <input class="napomena" type="text" placeholder="napomena" />
-        <input class="kolicina" type="number" placeholder="kolicina" />
-        <button>Dodaj</button>
-      </div>
-      <div id="hranaAPI">
-        <h2>Hrana(API):</h2>
-      </div>
-    </div>
+    <script type="module" src="apiPoziv.js"></script>
+    <script type="module" src="narudzba.js"></script>
   </body>
-  <footer>
-    <h1>RAČUN:</h1>
-    <div id="racun"></div>
-
-    <button id="obrisiSve">Obrisi sve</button>
-    <button id="placeno">Plaćeno</button>
-    <button onclick="sacuvaj()">Sacuvaj</button>
-    <p class="ukupno1">UKUPNO:</p>
-    <script src="narudzba.js"></script>
-    <script src="apiPoziv.js"></script>
-  </footer>
 </html>
